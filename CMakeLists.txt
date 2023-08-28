@@ -6,6 +6,10 @@ set(CMAKE_CUDA_ARCHITECTURES 75)
 enable_language(CUDA)
 
 find_package(CUDA REQUIRED)
+
+set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} -fPIC)
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -fPIC)
+
 message(STATUS "cuda version: " ${CUDA_VERSION_STRING})
 message(STATUS ${CUDA_INCLUDE_DIRS})
 include_directories(${CUDA_INCLUDE_DIRS})
@@ -14,7 +18,7 @@ include_directories(include)
 
 add_library(
     nerf_kernels
-    STATIC
+    SHARED
     src/simple.cu
 )
 
@@ -22,7 +26,7 @@ set_target_properties(nerf_kernels PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(nerf_kernels
                        PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 set_target_properties(nerf_kernels PROPERTIES PUBLIC_HEADER include/simple.h)
-target_link_libraries(nerf_kernels ${CUDA_LIBRARIES})
+target_link_libraries(nerf_kernels ${CUDA_LIBRARIES} -fPIC)
 
 install(TARGETS nerf_kernels
         EXPORT MyLibTargets 
